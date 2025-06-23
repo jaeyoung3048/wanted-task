@@ -10,6 +10,7 @@ services:
       - db
     volumes:
       - ./app:/backend/app
+      - .env:/backend/.env
     working_dir: /backend
     networks:
       - backend_net
@@ -19,8 +20,9 @@ services:
     container_name: mysql
     ports:
       - "3307:3306"  # 로컬 MySQL과 포트 충돌 방지
-    env_file:
-      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wanted_db
     command: >
       --default-authentication-plugin=caching_sha2_password
       --ngram_token_size=2
