@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: FastAPI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload"],
+      "jinja": true
+    },
+
+    {
+      "name": "Pytest: Debug Single Test",
+      "type": "debugpy",
+      "request": "launch",
+      "purpose": ["debug-test"],
+      "args": [
+        "${file}" // 현재 열려 있는 테스트 파일 디버깅
+      ],
+      "console": "internalConsole",
+      "justMyCode": false,
+      "redirectOutput": true
+    }
+  ]
+}

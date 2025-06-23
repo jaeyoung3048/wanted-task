@@ -1,0 +1,8 @@
+{
+  "editor.defaultFormatter": "charliermarsh.ruff",
+  "ruff.configuration": "${workspaceFolder}/.ruff.toml",
+  "python.testing.promptToConfigure": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.autoTestDiscoverOnSavePattern": "**/tests/*.py"
+}

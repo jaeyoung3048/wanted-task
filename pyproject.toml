@@ -1,0 +1,45 @@
+[project]
+name = "wantedlab-task"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "jaeyoung3048",email = "jaeyoung3048@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+
+
+[tool.poetry.dependencies]
+fastapi = "^0.115.13"
+sqlalchemy = "^2.0.41"
+uvicorn = {extras = ["standard"], version = "^0.34.3"}
+alembic = "^1.16.2"
+mysqlclient = "^2.2.7"
+aiomysql = "^0.2.0"
+pydantic-settings = "^2.10.0"
+python-dotenv = "^1.1.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+pytest-asyncio = "^1.0.0"
+ruff = "^0.12.0"
+factory-boy = "^3.3.3"
+mypy = "^1.16.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.mypy]
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+# 기본 검사 옵션
+strict = true
+ignore_missing_imports = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_optional = true
