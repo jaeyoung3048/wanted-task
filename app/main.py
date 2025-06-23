@@ -3,6 +3,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
+from app.api.router import api_router
 from app.db.session import close_db, init_db
 
 
@@ -26,11 +27,4 @@ app = FastAPI(
 )
 
 
-@app.get("/")
-async def read_root() -> dict[str, str]:
-    return {"message": "Hello, World!"}
-
-
-@app.get("/health")
-async def health_check() -> dict[str, str]:
-    return {"status": "healthy"}
+app.include_router(api_router)
