@@ -21,7 +21,11 @@ class Settings(BaseSettings):
     def database_url(self) -> str:
         return f"mysql+aiomysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-    model_config = SettingsConfigDict(env_file=".env")
+    @property
+    def sync_database_url(self) -> str:
+        return self.database_url.replace("+aiomysql", "+mysqldb")
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 settings = Settings()
