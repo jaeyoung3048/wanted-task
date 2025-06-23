@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./app:/backend/app
+    working_dir: /backend
+    networks:
+      - backend_net
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3307:3306"  # 로컬 MySQL과 포트 충돌 방지
+    env_file:
+      - .env
+    command: >
+      --default-authentication-plugin=caching_sha2_password
+      --ngram_token_size=2
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend_net
+
+volumes:
+  mysql_data:
+
+networks:
+  backend_net:
+    driver: bridge
