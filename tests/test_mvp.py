@@ -1,12 +1,4 @@
-import pytest
 from fastapi.testclient import TestClient
-
-from app.main import app
-
-
-@pytest.fixture
-def api() -> TestClient:
-    return TestClient(app)
 
 
 def test_company_name_autocomplete(api: TestClient) -> None:
