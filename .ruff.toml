@@ -1,6 +1,6 @@
 line-length = 88
 target-version = "py312"
-exclude = ["migrations"]
+exclude = ["migrations", ".venv", "__pycache__", ".ruff_cache", ".mypy_cache"]
 
 [format]
 quote-style = "double"
