@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 
 from app.core.dependency import DatabaseSession, Language
 from app.schemas.company import CompanyResponse, CreateCompanyRequest, CreateTagRequest
@@ -13,7 +13,7 @@ router = APIRouter()
 async def get_company(
     language: Language,
     db: DatabaseSession,
-    company_name: str = Query(..., description="회사 이름"),
+    company_name: str,
 ) -> CompanyResponse:
     return await CompanyService.get_company(db, company_name, language)
 
