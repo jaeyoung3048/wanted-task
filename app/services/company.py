@@ -15,6 +15,7 @@ class CompanyService:
     async def search(
         db: AsyncSession, query: str, language: str
     ) -> list[SearchResponse]:
+        # TODO[performance]: 추후 성능 개선 필요
         data = await db.execute(
             select(CompanyName).where(
                 CompanyName.lang_code == language, CompanyName.name.ilike(f"%{query}%")

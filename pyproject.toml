@@ -19,6 +19,7 @@ aiomysql = "^0.2.0"
 pydantic-settings = "^2.10.0"
 python-dotenv = "^1.1.0"
 cryptography = "^45.0.4"
+pycountry = "^24.6.1"
 
 
 [tool.poetry.group.dev.dependencies]

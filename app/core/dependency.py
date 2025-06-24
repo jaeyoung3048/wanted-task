@@ -1,9 +1,11 @@
 from collections.abc import AsyncGenerator
 from typing import Annotated
 
-from fastapi import Depends, Header
+from fastapi import Depends, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
+from app.core.language import validate_language_code
 from app.db.session import get_async_session
 
 
@@ -36,7 +38,12 @@ async def get_language(
         str: 언어 코드
     """
     if x_wanted_language is None:
-        return "ko"
+        return settings.DEFAULT_LANGUAGE
+
+    # TODO[exception]: 추후 커스텀 예외로 변경 필요
+    if not validate_language_code(x_wanted_language):
+        raise HTTPException(status_code=400, detail="Invalid language code")
+
     return x_wanted_language
 
 

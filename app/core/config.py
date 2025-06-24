@@ -22,6 +22,7 @@ class Settings(BaseSettings):
 
     # Application settings
     DEBUG: bool = Field(default=False, description="디버그 모드")
+    DEFAULT_LANGUAGE: str = Field(default="ko", description="기본 언어")
 
     @property
     def database_url(self) -> str:

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, RootModel
 
+from app.core.language import LanguageCode
 from app.schemas.base import ResponseModel
 
 
@@ -8,15 +9,8 @@ class CompanyResponse(ResponseModel):
     tags: list[str]
 
 
-class DynamicLanguageModel(RootModel[dict[str, str]]):
+class DynamicLanguageModel(RootModel[dict[LanguageCode, str]]):
     pass
-
-    # @model_validator(mode="after")
-    # def validate_keys(self) -> "DynamicLanguageModel":
-    #     invalid = False  # TODO[2025-06-24]: 추후 국가코드 검증 로직 필요
-    #     if invalid:
-    #         raise ValueError(f"Invalid lang codes: {invalid}")
-    #     return self
 
 
 class CreateTagRequest(BaseModel):
