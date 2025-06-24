@@ -1,7 +1,7 @@
 from typing import Dict
 
 from fastapi import HTTPException
-from sqlalchemy import and_, or_, select
+from sqlalchemy import and_, delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -196,3 +196,42 @@ class TagService:
 
         await db.commit()
         return result
+
+    @staticmethod
+    async def delete_tag(db: AsyncSession, company_name: str, tag_name: str, language: str) -> TagResponse:
+        company_query = await db.execute(select(Company).join(Company.names).where(CompanyName.name == company_name))
+        company = company_query.scalar_one_or_none()
+
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
+
+        tag_query = await db.execute(select(Tag).join(TagName).where(TagName.name == tag_name))
+        tag = tag_query.scalar_one_or_none()
+
+        if not tag:
+            raise HTTPException(status_code=404, detail="Tag not found")
+
+        await db.execute(delete(CompanyTag).where(CompanyTag.company_id == company.id, CompanyTag.tag_id == tag.id))
+        await db.commit()
+
+        remaining_tags_query = await db.execute(
+            select(TagName.name)
+            .join(Tag)
+            .join(CompanyTag)
+            .where(CompanyTag.company_id == company.id, TagName.lang_code == language)
+            .order_by(TagName.name)
+        )
+        remaining_tags = [tag_name for tag_name in remaining_tags_query.scalars().all()]
+
+        company_name_query = await db.execute(
+            select(CompanyName.name).where(CompanyName.company_id == company.id, CompanyName.lang_code == language)
+        )
+        company_name_in_language = company_name_query.scalar_one_or_none()
+
+        if not company_name_in_language:
+            first_name_query = await db.execute(
+                select(CompanyName.name).where(CompanyName.company_id == company.id).limit(1)
+            )
+            company_name_in_language = first_name_query.scalar_one()
+
+        return TagResponse(company_name=company_name_in_language, tags=remaining_tags)
