@@ -12,24 +12,34 @@ from app.services.tag import TagService
 
 class CompanyService:
     @staticmethod
-    async def search(db: AsyncSession, query: str, language: str) -> list[SearchResponse]:
+    async def search(
+        db: AsyncSession, query: str, language: str
+    ) -> list[SearchResponse]:
         data = await db.execute(
-            select(CompanyName).where(CompanyName.lang_code == language, CompanyName.name.ilike(f"%{query}%"))
+            select(CompanyName).where(
+                CompanyName.lang_code == language, CompanyName.name.ilike(f"%{query}%")
+            )
         )
         result = data.scalars().all()
 
         return [SearchResponse(company_name=result.name) for result in result]
 
     @staticmethod
-    async def get_company(db: AsyncSession, company_name: str, language: str) -> CompanyResponse:
+    async def get_company(
+        db: AsyncSession, company_name: str, language: str
+    ) -> CompanyResponse:
         company_query = await db.execute(
             select(Company)
             .join(Company.names)
             .where(CompanyName.name == company_name)
             .options(
                 selectinload(Company.names),
-                selectinload(Company.tags).selectinload(CompanyTag.tag).selectinload(Tag.names),
-                with_loader_criteria(TagName, TagName.lang_code == language, include_aliases=True),
+                selectinload(Company.tags)
+                .selectinload(CompanyTag.tag)
+                .selectinload(Tag.names),
+                with_loader_criteria(
+                    TagName, TagName.lang_code == language, include_aliases=True
+                ),
             )
         )
         company = company_query.scalar_one_or_none()
@@ -37,12 +47,16 @@ class CompanyService:
         if not company:
             raise HTTPException(status_code=404, detail="Company not found")
 
-        current_name = next((n.name for n in company.names if n.lang_code == language), None)
+        current_name = next(
+            (n.name for n in company.names if n.lang_code == language), None
+        )
 
         if not current_name:
             raise HTTPException(status_code=404, detail="Company name not found")
 
-        tag_names = [n.name for t in company.tags for n in t.tag.names if n.lang_code == language]
+        tag_names = [
+            n.name for t in company.tags for n in t.tag.names if n.lang_code == language
+        ]
 
         return CompanyResponse(
             company_name=current_name or "",
@@ -50,7 +64,9 @@ class CompanyService:
         )
 
     @staticmethod
-    async def create_company(db: AsyncSession, company_request: CreateCompanyRequest, language: str) -> CompanyResponse:
+    async def create_company(
+        db: AsyncSession, company_request: CreateCompanyRequest, language: str
+    ) -> CompanyResponse:
         company_names = list(company_request.company_name.root.values())
 
         existing_company_query = await db.execute(
@@ -66,15 +82,23 @@ class CompanyService:
         await db.flush()
 
         for lang_code, name in company_request.company_name.root.items():
-            company_name = CompanyName(company_id=company.id, name=name, lang_code=lang_code)
+            company_name = CompanyName(
+                company_id=company.id, name=name, lang_code=lang_code
+            )
             db.add(company_name)
 
-        created_tag_ids = await TagService.process_company_tags(db, company.id, company_request.tags)
+        created_tag_ids = await TagService.process_company_tags(
+            db, company.id, company_request.tags
+        )
 
         await db.commit()
 
         company_name_in_language = company_request.company_name.root.get(language, "")
 
-        tags_in_language = await TagService.get_tags_in_order(db, created_tag_ids, language)
+        tags_in_language = await TagService.get_tags_in_order(
+            db, created_tag_ids, language
+        )
 
-        return CompanyResponse(company_name=company_name_in_language, tags=tags_in_language)
+        return CompanyResponse(
+            company_name=company_name_in_language, tags=tags_in_language
+        )

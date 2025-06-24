@@ -10,9 +10,15 @@ class Base(DeclarativeBase):
 
 
 class PrimaryKeyMixin:
-    id: Mapped[int] = mapped_column(INTEGER(unsigned=True), primary_key=True, autoincrement=True)  # type: ignore[no-untyped-call]
+    id: Mapped[int] = mapped_column(
+        INTEGER(unsigned=True),  # type: ignore[no-untyped-call]
+        primary_key=True,
+        autoincrement=True,
+    )
 
 
 class BasicDateTimeMixin:
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.now, onupdate=datetime.now
+    )

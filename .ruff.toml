@@ -1,10 +1,20 @@
-line-length = 120
-target-version = "py39"
-
+line-length = 88
+target-version = "py312"
+exclude = ["migrations"]
 
 [format]
 quote-style = "double"
+docstring-code-format = true
+indent-style = "space"
+
+
+[lint.isort]
+combine-as-imports = true
+force-single-line = false
+known-first-party = ["app"]
+known-third-party = ["fastapi", "sqlalchemy", "pydantic"]
 
 
 [lint]
-select = ["E", "F", "I",  "N", "T"]
+select = ["E", "F", "I", "N", "T", "B", "UP", "RUF"]
+ignore = ["E501"]

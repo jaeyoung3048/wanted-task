@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Query
 
-from app.core.dependency import get_db, get_language
+from app.core.dependency import DatabaseSession, Language
 from app.schemas.company import CompanyResponse, CreateCompanyRequest, CreateTagRequest
 from app.schemas.tag import TagResponse
 from app.services.company import CompanyService
@@ -12,32 +11,32 @@ router = APIRouter()
 
 @router.get("/{company_name}")
 async def get_company(
-    company_name: str,
-    language: str = Depends(get_language),
-    db: AsyncSession = Depends(get_db),
+    language: Language,
+    db: DatabaseSession,
+    company_name: str = Query(..., description="회사 이름"),
 ) -> CompanyResponse:
     return await CompanyService.get_company(db, company_name, language)
 
 
 @router.post("/")
 async def create_company(
-    company_request: CreateCompanyRequest,
-    language: str = Depends(get_language),
-    db: AsyncSession = Depends(get_db),
+    request_body: CreateCompanyRequest,
+    language: Language,
+    db: DatabaseSession,
 ) -> CompanyResponse:
-    return await CompanyService.create_company(db, company_request, language)
+    return await CompanyService.create_company(db, request_body, language)
 
 
 @router.put("/{company_name}/tags")
 async def add_tag(
     company_name: str,
-    request: list[CreateTagRequest],
-    language: str = Depends(get_language),
-    db: AsyncSession = Depends(get_db),
+    request_body: list[CreateTagRequest],
+    language: Language,
+    db: DatabaseSession,
 ) -> TagResponse:
     """기존 회사에 새 태그를 추가합니다."""
     # 태그 추가
-    await TagService.add_tags_to_existing_company(db, company_name, request)
+    await TagService.add_tags_to_existing_company(db, company_name, request_body)
 
     company_data = await CompanyService.get_company(db, company_name, language)
 
@@ -48,7 +47,7 @@ async def add_tag(
 async def delete_tag(
     company_name: str,
     tag_name: str,
-    language: str = Depends(get_language),
-    db: AsyncSession = Depends(get_db),
+    language: Language,
+    db: DatabaseSession,
 ) -> TagResponse:
     return await TagService.delete_tag(db, company_name, tag_name, language)

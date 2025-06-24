@@ -1,4 +1,5 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Annotated
 
 from fastapi import Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,10 +19,12 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-DatabaseSession = Depends(get_db)
+DatabaseSession = Annotated[AsyncSession, Depends(get_db)]
 
 
-async def get_language(x_wanted_language: str | None = Header(default="ko", alias="x-wanted-language")) -> str:
+async def get_language(
+    x_wanted_language: str | None = Header(default="ko", alias="x-wanted-language"),
+) -> str:
     """
     x-wanted-language 헤더에서 언어 설정을 가져오는 의존성입니다.
     기본값은 'ko' 입니다.
@@ -35,3 +38,6 @@ async def get_language(x_wanted_language: str | None = Header(default="ko", alia
     if x_wanted_language is None:
         return "ko"
     return x_wanted_language
+
+
+Language = Annotated[str, Depends(get_language)]
