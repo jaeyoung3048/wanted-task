@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.language import choose_language
-from app.core.utils import sort_tags_numerically
 from app.models.company import Company, CompanyTag
 from app.models.tag import Tag, TagName
 
@@ -139,12 +138,10 @@ class TagRepository:
             .join(Tag)
             .join(CompanyTag)
             .where(CompanyTag.company_id == company_id, TagName.lang_code == language)
-            .order_by(TagName.name)
+            .order_by(CompanyTag.tag_id)
         )
         result = await self.db.execute(stmt)
-        tag_names = [name for name in result.scalars().all()]
-
-        return sort_tags_numerically(tag_names)
+        return [name for name in result.scalars().all()]
 
     async def find_tag_by_company_and_name(
         self, company_id: int, tag_name: str

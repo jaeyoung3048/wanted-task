@@ -18,7 +18,10 @@ class Company(Base, PrimaryKeyMixin, BasicDateTimeMixin):
         back_populates="company", passive_deletes=True, cascade="all, delete-orphan"
     )
     tags: Mapped[list[CompanyTag]] = relationship(
-        back_populates="company", passive_deletes=True, cascade="all, delete-orphan"
+        back_populates="company",
+        passive_deletes=True,
+        cascade="all, delete-orphan",
+        order_by="CompanyTag.tag_id",
     )
 
 

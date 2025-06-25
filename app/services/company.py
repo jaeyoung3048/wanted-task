@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.language import choose_language
-from app.core.utils import sort_tags_numerically
 from app.db.transaction import transactional
 from app.models.company import Company
 from app.repositories.company import CompanyRepository
@@ -53,7 +52,7 @@ class CompanyService:
 
         return CompanyResponse(
             company_name=company_name_in_lang.name,
-            tags=sort_tags_numerically(tag_names),
+            tags=tag_names,
         )
 
     @transactional
@@ -131,11 +130,9 @@ class CompanyService:
 
         tag_id_to_name = await self.tag_repo.get_tag_names_by_ids(tag_ids, language)
 
-        tag_names = [
+        return [
             tag_id_to_name[tag_id] for tag_id in tag_ids if tag_id in tag_id_to_name
         ]
-
-        return sort_tags_numerically(tag_names)
 
     async def search(self, query: str, language: str) -> list[SearchResponse]:
         search_data = await self.company_repo.search_by_name_pattern(query, language)

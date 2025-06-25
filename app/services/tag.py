@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.language import choose_language
-from app.core.utils import sort_tags_numerically
 from app.db.transaction import transactional
 from app.repositories.company import CompanyRepository
 from app.repositories.company_tag import CompanyTagRepository
@@ -55,7 +54,7 @@ class TagService:
             result.append(
                 TagResponse(
                     company_name=company_name_in_lang,
-                    tags=sort_tags_numerically(tag_names),
+                    tags=tag_names,
                 )
             )
 
