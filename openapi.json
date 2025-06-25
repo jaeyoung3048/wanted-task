@@ -1,0 +1,399 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WantedLab 과제용 API 서버",
+    "description": "WantedLab 과제용 API 서버",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/search": {
+      "get": {
+        "tags": ["search"],
+        "summary": "Search",
+        "operationId": "search_search_get",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "검색 쿼리",
+              "title": "Query"
+            },
+            "description": "검색 쿼리"
+          },
+          {
+            "name": "x-wanted-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "default": "ko",
+              "title": "X-Wanted-Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SearchResponse" },
+                  "title": "Response Search Search Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/companies/{company_name}": {
+      "get": {
+        "tags": ["companies"],
+        "summary": "Get Company",
+        "operationId": "get_company_companies__company_name__get",
+        "parameters": [
+          {
+            "name": "company_name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Company Name" }
+          },
+          {
+            "name": "x-wanted-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "default": "ko",
+              "title": "X-Wanted-Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CompanyResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/companies": {
+      "post": {
+        "tags": ["companies"],
+        "summary": "Create Company",
+        "operationId": "create_company_companies_post",
+        "parameters": [
+          {
+            "name": "x-wanted-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "default": "ko",
+              "title": "X-Wanted-Language"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCompanyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CompanyResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/companies/{company_name}/tags": {
+      "put": {
+        "tags": ["companies"],
+        "summary": "Add Tag",
+        "description": "기존 회사에 새 태그를 추가합니다.",
+        "operationId": "add_tag_companies__company_name__tags_put",
+        "parameters": [
+          {
+            "name": "company_name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Company Name" }
+          },
+          {
+            "name": "x-wanted-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "default": "ko",
+              "title": "X-Wanted-Language"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/CreateTagRequest" },
+                "title": "Request Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/companies/{company_name}/tags/{tag_name}": {
+      "delete": {
+        "tags": ["companies"],
+        "summary": "Delete Tag",
+        "operationId": "delete_tag_companies__company_name__tags__tag_name__delete",
+        "parameters": [
+          {
+            "name": "company_name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Company Name" }
+          },
+          {
+            "name": "tag_name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Tag Name" }
+          },
+          {
+            "name": "x-wanted-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "default": "ko",
+              "title": "X-Wanted-Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "tags": ["tags"],
+        "summary": "Get Tags",
+        "operationId": "get_tags_tags_get",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "태그명",
+              "title": "Query"
+            },
+            "description": "태그명"
+          },
+          {
+            "name": "x-wanted-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "default": "ko",
+              "title": "X-Wanted-Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TagResponse" },
+                  "title": "Response Get Tags Tags Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CompanyResponse": {
+        "properties": {
+          "company_name": { "type": "string", "title": "Company Name" },
+          "tags": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": ["company_name", "tags"],
+        "title": "CompanyResponse"
+      },
+      "CreateCompanyRequest": {
+        "properties": {
+          "company_name": {
+            "$ref": "#/components/schemas/DynamicLanguageModel"
+          },
+          "tags": {
+            "items": { "$ref": "#/components/schemas/CreateTagRequest" },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": ["company_name", "tags"],
+        "title": "CreateCompanyRequest"
+      },
+      "CreateTagRequest": {
+        "properties": {
+          "tag_name": { "$ref": "#/components/schemas/DynamicLanguageModel" }
+        },
+        "type": "object",
+        "required": ["tag_name"],
+        "title": "CreateTagRequest"
+      },
+      "DynamicLanguageModel": {
+        "additionalProperties": { "type": "string" },
+        "type": "object",
+        "title": "DynamicLanguageModel",
+        "example": { "en": "string", "jp": "string", "ko": "string" }
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "SearchResponse": {
+        "properties": {
+          "company_name": { "type": "string", "title": "Company Name" }
+        },
+        "type": "object",
+        "required": ["company_name"],
+        "title": "SearchResponse"
+      },
+      "TagResponse": {
+        "properties": {
+          "company_name": { "type": "string", "title": "Company Name" },
+          "tags": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": ["company_name", "tags"],
+        "title": "TagResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
