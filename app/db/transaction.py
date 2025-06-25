@@ -1,15 +1,13 @@
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import Any, TypeVar
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-T = TypeVar("T")
 
-
-def transactional(func: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
+def transactional[T](func: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
     @wraps(func)
-    async def wrapper(self, *args: Any, **kwargs: Any) -> T:
+    async def wrapper(self: Any, /, *args: Any, **kwargs: Any) -> T:
         db = getattr(self, "db", None)
 
         if not isinstance(db, AsyncSession):
