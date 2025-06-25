@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.language import choose_language
+from app.core.utils import sort_tags_numerically
 from app.models.company import Company, CompanyTag
 from app.models.tag import Tag, TagName
 
@@ -19,7 +20,7 @@ class TagRepository:
             .options(selectinload(Tag.names))
         )
         result = await self.db.execute(stmt)
-        return result.scalar_one_or_none()
+        return result.scalars().first()
 
     async def find_by_names(
         self, tag_names: dict[str, str]
@@ -141,4 +142,19 @@ class TagRepository:
             .order_by(TagName.name)
         )
         result = await self.db.execute(stmt)
-        return [name for name in result.scalars().all()]
+        tag_names = [name for name in result.scalars().all()]
+
+        return sort_tags_numerically(tag_names)
+
+    async def find_tag_by_company_and_name(
+        self, company_id: int, tag_name: str
+    ) -> Tag | None:
+        stmt = (
+            select(Tag)
+            .join(CompanyTag)
+            .join(TagName)
+            .where(CompanyTag.company_id == company_id, TagName.name == tag_name)
+            .options(selectinload(Tag.names))
+        )
+        result = await self.db.execute(stmt)
+        return result.scalars().first()

@@ -3,8 +3,8 @@ from __future__ import annotations
 from factory.alchemy import SQLAlchemyModelFactory
 
 
-class AsyncAlchemyFactory(SQLAlchemyModelFactory):
+class TestFactory(SQLAlchemyModelFactory):
     class Meta:
         abstract = True
         sqlalchemy_session = None
-        sqlalchemy_session_persistence = "flush"
+        sqlalchemy_session_persistence = "commit"

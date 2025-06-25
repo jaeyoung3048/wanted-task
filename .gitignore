@@ -190,7 +190,3 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,linux
 
-
-# 테스트용 데이터와 로직
-company_tag_sample.csv
-insert_dummy_data.py

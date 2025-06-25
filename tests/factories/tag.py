@@ -4,15 +4,15 @@ from factory.declarations import Iterator, SubFactory
 from factory.faker import Faker
 
 from app.models.tag import Tag, TagName
-from tests.factories.base import AsyncAlchemyFactory
+from tests.factories.base import TestFactory
 
 
-class TagFactory(AsyncAlchemyFactory):
+class TagFactory(TestFactory):
     class Meta:
         model = Tag
 
 
-class TagNameFactory(AsyncAlchemyFactory):
+class TagNameFactory(TestFactory):
     tag = SubFactory(TagFactory)
     name = Faker("word")
     lang_code = Iterator(["en", "ko", "ja"])

@@ -40,7 +40,7 @@ def _create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSess
         bind=engine,
         class_=AsyncSession,
         expire_on_commit=False,  # 트랜잭션 커밋 후 객체 만료 방지
-        autoflush=True,  # 자동 flush (쿼리 전 변경사항 반영)
+        autoflush=False,  # 자동 flush (쿼리 전 변경사항 반영)
         autocommit=False,  # 수동 트랜잭션 관리
     )
 
@@ -76,11 +76,12 @@ async def init_db() -> None:
     """
     global async_engine, AsyncSessionLocal
 
-    # 엔진 생성
-    async_engine = _create_engine()
+    if async_engine is None:
+        # 엔진 생성
+        async_engine = _create_engine()
 
-    # 세션 팩토리 생성
-    AsyncSessionLocal = _create_session_factory(async_engine)
+        # 세션 팩토리 생성
+        AsyncSessionLocal = _create_session_factory(async_engine)
 
 
 async def close_db() -> None:

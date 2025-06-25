@@ -6,7 +6,7 @@ from app.schemas.tag import TagResponse
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def get_tags(
     language: Language,
     tag_service: TagServiceDep,

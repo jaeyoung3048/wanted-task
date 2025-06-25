@@ -1,23 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from factory.declarations import Iterator, SubFactory
 from factory.faker import Faker
 
 from app.models.company import Company, CompanyName, CompanyTag
-from tests.factories.base import AsyncAlchemyFactory
-
-if TYPE_CHECKING:
-    from tests.factories.tag import TagFactory
+from tests.factories.base import TestFactory
+from tests.factories.tag import TagFactory
 
 
-class CompanyFactory(AsyncAlchemyFactory):
+class CompanyFactory(TestFactory):
     class Meta:
         model = Company
 
 
-class CompanyNameFactory(AsyncAlchemyFactory):
+class CompanyNameFactory(TestFactory):
     company = SubFactory(CompanyFactory)
     name = Faker("company")
     lang_code = Iterator(["en", "ko", "ja"])
@@ -26,7 +22,7 @@ class CompanyNameFactory(AsyncAlchemyFactory):
         model = CompanyName
 
 
-class CompanyTagFactory(AsyncAlchemyFactory):
+class CompanyTagFactory(TestFactory):
     company = SubFactory(CompanyFactory)
     tag = SubFactory(TagFactory)
 

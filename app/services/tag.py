@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.language import choose_language
+from app.core.utils import sort_tags_numerically
 from app.db.transaction import transactional
 from app.repositories.company import CompanyRepository
 from app.repositories.company_tag import CompanyTagRepository
@@ -24,8 +25,8 @@ class TagService:
         self.company_tag_repo = company_tag_repo
 
     async def get_tag(self, tag_name: str, language: str) -> list[TagResponse]:
-        tag = await self.tag_repo.find_by_name(tag_name)
-        if not tag:
+        tags = await self.tag_repo.find_by_name(tag_name)
+        if not tags:
             raise HTTPException(status_code=404, detail="Tag not found")
 
         companies = await self.tag_repo.get_companies_by_tag_name(tag_name)
@@ -52,7 +53,10 @@ class TagService:
                 tag_names.append(tag_name_in_lang)
 
             result.append(
-                TagResponse(company_name=company_name_in_lang, tags=tag_names)
+                TagResponse(
+                    company_name=company_name_in_lang,
+                    tags=sort_tags_numerically(tag_names),
+                )
             )
 
         return result
@@ -118,7 +122,7 @@ class TagService:
         if not company_id:
             raise HTTPException(status_code=404, detail="Company not found")
 
-        tag = await self.tag_repo.find_by_name(tag_name)
+        tag = await self.tag_repo.find_tag_by_company_and_name(company_id, tag_name)
         if not tag:
             raise HTTPException(status_code=404, detail="Tag not found")
 

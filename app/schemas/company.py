@@ -12,13 +12,11 @@ class CompanyResponse(ResponseModel):
 class DynamicLanguageModel(RootModel[dict[str, str]]):
     @model_validator(mode="before")
     @classmethod
-    def _validate_language_codes(
-        cls, data: dict[str, str]
-    ) -> dict[str, dict[str, str]]:
+    def _validate_language_codes(cls, data: dict[str, str]) -> dict[str, str]:
         for key in data.keys():
             if not validate_language_code(key):
                 raise ValueError("Invalid language code")
-        return {"root": data}
+        return data
 
     model_config = ConfigDict(
         json_schema_extra={

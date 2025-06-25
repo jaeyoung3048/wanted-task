@@ -22,12 +22,46 @@ def test_company_search(api: TestClient) -> None:
     2. 회사 이름으로 회사 검색
     header의 x-wanted-language 언어값에 따라 해당 언어로 출력되어야 합니다.
     """
+
+    from tests.factories.company import (
+        CompanyFactory,
+        CompanyNameFactory,
+        CompanyTagFactory,
+    )
+    from tests.factories.tag import TagFactory, TagNameFactory
+
+    company = CompanyFactory.create()
+
+    data = {
+        "ko": "원티드랩",
+        "en": "Wantedlab",
+        "tw": "Wantedlab",
+    }
+
+    for lang_code, name in data.items():
+        CompanyNameFactory.create(
+            name=name,
+            lang_code=lang_code,
+            company=company,
+        )
+
+    for i in ["태그_4", "태그_20", "태그_16"]:
+        tag = TagFactory.create()
+        TagNameFactory.create(
+            name=i,
+            lang_code="ko",
+            tag=tag,
+        )
+        CompanyTagFactory.create(
+            company=company,
+            tag=tag,
+        )
+
     resp = api.get("/companies/Wantedlab", headers=[("x-wanted-language", "ko")])
 
-    company = resp.json()
-
+    company_data = resp.json()
     assert resp.status_code == 200
-    assert company == {
+    assert company_data == {
         "company_name": "원티드랩",
         "tags": [
             "태그_4",
@@ -36,9 +70,7 @@ def test_company_search(api: TestClient) -> None:
         ],
     }
 
-    # 검색된 회사가 없는경우 404를 리턴합니다.
     resp = api.get("/companies/없는회사", headers=[("x-wanted-language", "ko")])
-
     assert resp.status_code == 404
 
 
@@ -120,6 +152,54 @@ def test_new_tag(api: TestClient) -> None:
     5.  회사 태그 정보 추가
     저장 완료후 header의 x-wanted-language 언어값에 따라 해당 언어로 출력되어야 합니다.
     """
+    from tests.factories.company import (
+        CompanyFactory,
+        CompanyNameFactory,
+        CompanyTagFactory,
+    )
+    from tests.factories.tag import TagFactory, TagNameFactory
+
+    company = CompanyFactory.create()
+
+    data = {
+        "ko": "원티드랩",
+        "en": "Wantedlab",
+        "tw": "Wantedlab",
+    }
+
+    for lang_code, name in data.items():
+        CompanyNameFactory.create(
+            name=name,
+            lang_code=lang_code,
+            company=company,
+        )
+
+    tag_data = [
+        {
+            "ko": "태그_16",
+            "tw": "tag_16",
+            "en": "tag_16",
+        },
+        {
+            "ko": "태그_20",
+            "tw": "tag_20",
+            "en": "tag_20",
+        },
+    ]
+
+    for tag_name in tag_data:
+        tag = TagFactory.create()
+        CompanyTagFactory.create(
+            company=company,
+            tag=tag,
+        )
+        for lang_code, name in tag_name.items():
+            TagNameFactory.create(
+                name=name,
+                lang_code=lang_code,
+                tag=tag,
+            )
+
     resp = api.put(
         "/companies/원티드랩/tags",
         json=[
@@ -158,6 +238,64 @@ def test_delete_tag(api: TestClient) -> None:
     6.  회사 태그 정보 삭제
     저장 완료후 header의 x-wanted-language 언어값에 따라 해당 언어로 출력되어야 합니다.
     """
+    from tests.factories.company import (
+        CompanyFactory,
+        CompanyNameFactory,
+        CompanyTagFactory,
+    )
+    from tests.factories.tag import TagFactory, TagNameFactory
+
+    company = CompanyFactory.create()
+
+    data = {
+        "ko": "원티드랩",
+        "en": "Wantedlab",
+        "tw": "Wantedlab",
+    }
+
+    for lang_code, name in data.items():
+        CompanyNameFactory.create(
+            name=name,
+            lang_code=lang_code,
+            company=company,
+        )
+
+    tag_data = [
+        {
+            "ko": "태그_4",
+            "tw": "tag_4",
+            "en": "tag_4",
+        },
+        {
+            "ko": "태그_16",
+            "tw": "tag_16",
+            "en": "tag_16",
+        },
+        {
+            "ko": "태그_20",
+            "tw": "tag_20",
+            "en": "tag_20",
+        },
+        {
+            "ko": "태그_50",
+            "jp": "タグ_50",
+            "en": "tag_50",
+        },
+    ]
+
+    for tag_name in tag_data:
+        tag = TagFactory.create()
+        CompanyTagFactory.create(
+            company=company,
+            tag=tag,
+        )
+        for lang_code, name in tag_name.items():
+            TagNameFactory.create(
+                name=name,
+                lang_code=lang_code,
+                tag=tag,
+            )
+
     resp = api.delete(
         "/companies/원티드랩/tags/태그_16",
         headers=[("x-wanted-language", "en")],

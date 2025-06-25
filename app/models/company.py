@@ -37,6 +37,7 @@ class CompanyName(Base, PrimaryKeyMixin, BasicDateTimeMixin):
 
     __table_args__ = (
         UniqueConstraint("company_id", "lang_code", name="uq_companyname_lang"),
+        UniqueConstraint("name", "lang_code", name="uq_companyname_name_lang"),
         Index("ix_companyname_name", "name"),
         Index("ix_companyname_lang_code", "lang_code"),
         Index(

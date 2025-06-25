@@ -16,7 +16,7 @@ async def get_company(
     return await company_service.get_company(company_name, language)
 
 
-@router.post("/")
+@router.post("")
 async def create_company(
     request_body: CreateCompanyRequest,
     language: Language,

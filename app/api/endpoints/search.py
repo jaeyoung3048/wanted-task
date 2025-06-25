@@ -6,7 +6,7 @@ from app.schemas.search import SearchResponse
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def search(
     language: Language,
     company_service: CompanyServiceDep,

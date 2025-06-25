@@ -14,6 +14,7 @@ class CompanyRepository:
     async def find_by_name(self, company_name: str, language: str) -> Company | None:
         stmt = (
             select(Company)
+            .distinct()
             .join(Company.names)
             .where(CompanyName.name == company_name)
             .options(
