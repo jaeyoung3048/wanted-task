@@ -39,9 +39,9 @@ def _create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSess
     return async_sessionmaker(
         bind=engine,
         class_=AsyncSession,
-        expire_on_commit=False,
-        autoflush=False,
-        autocommit=False,
+        expire_on_commit=False,  # 트랜잭션 커밋 후 객체 만료 방지
+        autoflush=True,  # 자동 flush (쿼리 전 변경사항 반영)
+        autocommit=False,  # 수동 트랜잭션 관리
     )
 
 

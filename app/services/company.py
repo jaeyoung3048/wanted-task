@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.language import choose_language
+from app.db.transaction import transactional
 from app.models.company import Company
 from app.repositories.company import CompanyRepository
 from app.repositories.company_tag import CompanyTagRepository
@@ -54,6 +55,7 @@ class CompanyService:
             tags=tag_names,
         )
 
+    @transactional
     async def create_company(
         self, request: CreateCompanyRequest, language: str
     ) -> CompanyResponse:
@@ -74,8 +76,6 @@ class CompanyService:
             created_tag_ids = await self._process_company_tags(
                 created_company.id, request.tags
             )
-
-        await self.db.commit()
 
         available_company_langs = list(request.company_name.root.keys())
         chosen_company_lang = choose_language(available_company_langs, language)

@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.language import choose_language
+from app.db.transaction import transactional
 from app.repositories.company import CompanyRepository
 from app.repositories.company_tag import CompanyTagRepository
 from app.repositories.tag import TagRepository
@@ -56,6 +57,7 @@ class TagService:
 
         return result
 
+    @transactional
     async def add_tags_to_existing_company(
         self, company_name: str, tag_requests: list[CreateTagRequest]
     ) -> dict[str, int]:
@@ -106,9 +108,9 @@ class TagService:
                 await self.company_tag_repo.create_relation(company_id, new_tag.id)
                 result["created"] += 1
 
-        await self.db.commit()
         return result
 
+    @transactional
     async def delete_tag(
         self, company_name: str, tag_name: str, language: str
     ) -> TagResponse:
@@ -140,8 +142,6 @@ class TagService:
                 )
             else:
                 company_name_in_language = company_name
-
-        await self.db.commit()
 
         return TagResponse(
             company_name=company_name_in_language, tags=remaining_tag_names
