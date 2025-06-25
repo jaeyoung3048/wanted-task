@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Query
 
-from app.core.dependency import DatabaseSession, Language
+from app.core.dependency import Language, TagServiceDep
 from app.schemas.tag import TagResponse
-from app.services.tag import TagService
 
 router = APIRouter()
 
@@ -10,7 +9,7 @@ router = APIRouter()
 @router.get("/")
 async def get_tags(
     language: Language,
-    db: DatabaseSession,
+    tag_service: TagServiceDep,
     query: str = Query(..., description="태그명"),
 ) -> list[TagResponse]:
-    return await TagService.get_tag(db, query, language)
+    return await tag_service.get_tag(query, language)

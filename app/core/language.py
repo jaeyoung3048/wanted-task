@@ -1,6 +1,5 @@
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Iterable
 from functools import cache
-from typing import Any
 
 import pycountry
 
@@ -8,7 +7,6 @@ from app.core.config import settings
 
 __all__ = [
     "LANGUAGE_ALIAS_MAP",
-    "LanguageCode",
     "choose_language",
     "normalize_language_code",
     "validate_language_code",
@@ -17,7 +15,6 @@ __all__ = [
 # ISO-639-1 과 다른 케이스 대응
 LANGUAGE_ALIAS_MAP: dict[str, str] = {
     "jp": "ja",
-    "tw": "zh-Hant",
     "kr": "ko",
     "cn": "zh",
 }
@@ -57,20 +54,6 @@ def choose_language(available: Iterable[str], requested: str | None) -> str:
         return _DEFAULT_LANG_CANON
 
     return sorted(available_set)[0]
-
-
-class LanguageCode(str):
-    """언어코드 대응용 타입"""
-
-    @classmethod
-    def __get_validators__(cls) -> Iterator[Callable[[Any], Any]]:
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v: str) -> str:
-        if normalize_language_code(v) is None:
-            raise ValueError("Invalid language code")
-        return v
 
 
 _DEFAULT_LANG_CANON = normalize_language_code(settings.DEFAULT_LANGUAGE)

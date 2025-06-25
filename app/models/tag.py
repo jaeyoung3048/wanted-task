@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint
+from sqlalchemy import ForeignKey, Index, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, BasicDateTimeMixin, PrimaryKeyMixin
@@ -33,4 +33,8 @@ class TagName(Base, PrimaryKeyMixin, BasicDateTimeMixin):
 
     tag: Mapped[Tag] = relationship(back_populates="names", passive_deletes=True)
 
-    __table_args__ = (UniqueConstraint("tag_id", "lang_code", name="uq_tagname_lang"),)
+    __table_args__ = (
+        UniqueConstraint("tag_id", "lang_code", name="uq_tagname_lang"),
+        Index("ix_tagname_name", "name"),
+        Index("ix_tagname_lang_code", "lang_code"),
+    )
